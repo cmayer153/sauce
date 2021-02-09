@@ -1,38 +1,62 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 const axios = require('axios');
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
-
 
 
 
 function App(props) {
   var [authToken, setAuthToken] = useState(null);
-  let myParams = props;
+  var [formInfo, setFormInfo] = useState('');
+  var [artistList, setArtistList] = useState([]);
 
-  console.log("urlPARAMS: ", myParams);
+  useEffect( () => {
+    let hash = props.location.hash;
+    console.log("whole hash: ", hash);
+    let startToken = hash.indexOf('=');
+    let endToken = hash.indexOf('&');
+    //setAuthToken(hash.slice(startToken + 1, endToken));
+    console.log("start: ", startToken);
+    console.log("end: ", endToken);
+    let theToken = hash.slice(startToken + 1, endToken);
+    console.log("MY TOKEN:", theToken);
+    setAuthToken(theToken);
+  }, [props.location.hash])
 
 
-  const authorizeSpotify = () => {
-    console.log("AUTHORIZING");
-/*    
-    axios.get(`https://accounts.spotify.com/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&scope=user-read-private%20user-read-email&response_type=token&state=123`)
-      .then( (response) => {
-        console.log("RETURNED FROM AUTH", response);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let searchString = formInfo.replace(/\s/g, '%20');
+    const options = {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    }
+    axios.get(`/search?q=${searchString}`, options)
+      .then ( (res) => {
+        console.log("back from spotify: ", res.data);
       })
-      .catch((err) => {
-        console.log("error returning from auth: ", err);
+      .catch ( (err) => {
+        console.log("error from spotify: ", err);
       });
-      */
-    return <Redirect to='https://spotify.com' />
+  }
+
+  const handleChange = (e) => {
+    setFormInfo(e.target.value);
   }
 
 
 
     return (
       <div className="App">
-        passed auth?
+        <form onSubmit={handleSubmit}>
+          <label>
+            Artist Search:
+            <input type="text" name="artist" value={formInfo} onChange={handleChange}/>
+          </label>
+          <input type="submit" value="Search" />
+        </form>
       </div>
     )
 

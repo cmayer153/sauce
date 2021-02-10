@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 const axios = require('axios');
 import {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
-import ArtistList from'./ArtistList.jsx';
+import ArtistList from './ArtistList.jsx';
+import GenreList from './GenreList.jsx';
+import TrackList from './TrackList.jsx';
 
 
 
 function App(props) {
   var [authToken, setAuthToken] = useState(null);
-  var [formInfo, setFormInfo] = useState('');
-  var [artistList, setArtistList] = useState(null);
 
   useEffect( () => {
     let hash = props.location.hash;
@@ -26,40 +26,14 @@ function App(props) {
   }, [props.location.hash])
 
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let searchString = formInfo.replace(/\s/g, '%20');
-    const options = {
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
-    }
-    axios.get(`/search?q=${searchString}`, options)
-      .then ( (res) => {
-        console.log("back from spotify: ", res.data);
-        setArtistList(res.data);
-      })
-      .catch ( (err) => {
-        console.log("error from spotify: ", err);
-      });
-  }
-
-  const handleChange = (e) => {
-    setFormInfo(e.target.value);
-  }
-
 
 
     return (
       <div className="App">
-        <form onSubmit={handleSubmit}>
-          <label>
-            Artist Search:
-            <input type="text" name="artist" value={formInfo} onChange={handleChange}/>
-          </label>
-          <input type="submit" value="Search" />
-        </form>
-        <ArtistList bands={artistList}/>
+        <ArtistList authToken={authToken}/>
+        <GenreList authToken={authToken} />
+        <TrackList authToken={authToken} />
+
       </div>
     )
 

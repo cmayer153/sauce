@@ -4,10 +4,10 @@ import {useState, useEffect} from 'react';
 import Artist from './Artist.jsx';
 
 
-function ArtistList(props) {
+function GenreList(props) {
   const {authToken} = props;
   var [formInfo, setFormInfo] = useState('');
-  var [artistList, setArtistList] = useState([]);
+  var [genreList, setGenreList] = useState([]);
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,10 +17,10 @@ function ArtistList(props) {
         Authorization: `Bearer ${authToken}`
       }
     }
-    axios.get(`/search?q=${searchString}`, options)
+    axios.get(`/genre?q=${searchString}`, options)
       .then ( (res) => {
         console.log("back from spotify: ", res.data);
-        setArtistList(res.data);
+        setGenreList(res.data);
       })
       .catch ( (err) => {
         console.log("error from spotify: ", err);
@@ -35,16 +35,16 @@ function ArtistList(props) {
     <div>
       <form onSubmit={handleSubmit}>
         <label>
-          Artist Search:
-          <input type="text" name="artist" value={formInfo} onChange={handleChange}/>
+          Genre Search:
+          <input type="text" name="genre" value={formInfo} onChange={handleChange}/>
         </label>
         <input type="submit" value="Search" />
       </form>
-    { artistList.map( (band) => (
+    { genreList.map( (band) => (
       <Artist band={band}/>
     ))}
     </div>
   )
 }
 
-export default ArtistList;
+export default GenreList;
